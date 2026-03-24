@@ -172,17 +172,6 @@ python main.py \
   --weights "1.0,1.0,1.0,1.0"
 ```
 
-## Ocular property models
-
-Trained classifiers for three ocular-specific properties:
-
-| Property | Model | Features | ROC-AUC |
-|----------|-------|----------|---------|
-| Corneal permeability | XGBClassifier | 43 RDKit descriptors | 0.92 |
-| Melanin binding | ExtraTreeClassifier | 167-bit MACCS fingerprints | 0.87 |
-| Eye irritation | GradientBoostingClassifier | 167-bit MACCS fingerprints | 0.98 |
-
-
 ## Scoring and re-ranking
 
 Generated candidates were scored using a multi-fidelity pipeline:
