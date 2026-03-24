@@ -10,13 +10,6 @@ Loading:
 - `corneal.pkl` and `melanin.pkl`: use `joblib.load()`
 - `irritation.pkl`: use `pickle.load()`
 
-These classifiers are used as reward components during molecule generation.
-To retrain, run:
-
-```bash
-python scripts/train_ocular_models.py --data_dir data/ocular/ --output_dir models/
-```
-
 Note: different generative methods may reference these models under slightly different filenames
 (e.g. `corneal_tacogfn.pkl`, `irritation_rxnflow.pkl`). The `setup.sh` script symlinks
 them into each method directory. The underlying models are identical.
