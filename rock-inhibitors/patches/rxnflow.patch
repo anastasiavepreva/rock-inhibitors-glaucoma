@@ -1,0 +1,139 @@
+diff --git a/scripts/few_shot_unidock_moo.py b/scripts/few_shot_unidock_moo.py
+index 60c0b63..d56912b 100644
+--- a/scripts/few_shot_unidock_moo.py
++++ b/scripts/few_shot_unidock_moo.py
+@@ -84,6 +84,7 @@ def run(args):
+     if args.wandb:
+         wandb.init(project="rxnflow", name=args.wandb, group="pocket-conditional")
+ 
++    config.task.moo.objectives = ["vina", "qed", "irr", "mel", "cor"]
+     trainer = VinaMOOTrainer_Fewshot(config)
+     trainer.run()
+     trainer.terminate()
+diff --git a/scripts/sampling_zeroshot.py b/scripts/sampling_zeroshot.py
+index 1d95f83..9a0a8dd 100644
+--- a/scripts/sampling_zeroshot.py
++++ b/scripts/sampling_zeroshot.py
+@@ -53,6 +53,8 @@ def run(args):
+ 
+     # create sampler
+     model_path = download_pretrained_weight(args.model_path)
++    config.task.pocket_conditional.proxy = ("TacoGFN_Reward", "QVina", "ZINCDock15M")
++    config.task.moo.objectives = ["vina", "qed"]
+     sampler = ProxySampler(config, model_path, device)
+     sample_dist, dist_params = parse_temperature(args.temperature)
+     sampler.update_temperature(sample_dist, dist_params)
+diff --git a/src/rxnflow/tasks/unidock_vina_mogfn.py b/src/rxnflow/tasks/unidock_vina_mogfn.py
+index 43f45f2..75799db 100644
+--- a/src/rxnflow/tasks/unidock_vina_mogfn.py
++++ b/src/rxnflow/tasks/unidock_vina_mogfn.py
+@@ -56,7 +56,7 @@ class VinaMOGFNTrainer(VinaTrainer):
+ 
+     def set_default_hps(self, base: Config):
+         super().set_default_hps(base)
+-        base.task.moo.objectives = ["vina", "qed"]
++        base.task.moo.objectives = ["vina", "qed", "irr", "mel", "cor"]
+         base.task.constraint.rule = None
+         base.num_training_steps = 1000
+         base.validate_every = 0
+diff --git a/src/rxnflow/tasks/unidock_vina_moo.py b/src/rxnflow/tasks/unidock_vina_moo.py
+index bc615ae..c72c177 100644
+--- a/src/rxnflow/tasks/unidock_vina_moo.py
++++ b/src/rxnflow/tasks/unidock_vina_moo.py
+@@ -7,9 +7,9 @@ from torch import Tensor
+ from gflownet import ObjectProperties
+ from rxnflow.config import Config, init_empty
+ from rxnflow.tasks.unidock_vina import VinaTask, VinaTrainer
+-from rxnflow.tasks.utils.chem_metrics import mol2qed, mol2sascore
++from rxnflow.tasks.utils.chem_metrics import mol2qed, mol2sascore, irritation, melanin, corneal
+ 
+-aux_tasks = {"qed": mol2qed, "sa": mol2sascore}
++aux_tasks = {"qed": mol2qed, "sa": mol2sascore, "irr": irritation, "mel": melanin, "cor": corneal}
+ 
+ """Multi-objective optimization but not MO-GFN (production-based)"""
+ 
+@@ -18,7 +18,7 @@ class VinaMOOTask(VinaTask):
+     def __init__(self, cfg: Config):
+         super().__init__(cfg)
+         self.objectives = cfg.task.moo.objectives
+-        assert set(self.objectives) <= {"vina", "qed", "sa"}
++        assert set(self.objectives) <= {"vina", "qed", "sa", "irr", "mel", "cor"}
+ 
+     def compute_obj_properties(self, mols: list[RDMol]) -> tuple[ObjectProperties, Tensor]:
+         is_valid_t = torch.tensor([self.constraint(obj) for obj in mols], dtype=torch.bool)
+@@ -55,7 +55,7 @@ class VinaMOOTrainer(VinaTrainer):
+ 
+     def set_default_hps(self, base: Config):
+         super().set_default_hps(base)
+-        base.task.moo.objectives = ["vina", "qed"]
++        base.task.moo.objectives = ["vina", "qed", "irr", "mel", "cor"]
+         base.task.constraint.rule = None
+         base.num_training_steps = 1000
+         base.validate_every = 0
+diff --git a/src/rxnflow/tasks/utils/chem_metrics.py b/src/rxnflow/tasks/utils/chem_metrics.py
+index e7c3298..4e43943 100644
+--- a/src/rxnflow/tasks/utils/chem_metrics.py
++++ b/src/rxnflow/tasks/utils/chem_metrics.py
+@@ -1,3 +1,6 @@
++import pickle
++
++import joblib
+ import numpy as np
+ import torch
+ from rdkit import Chem, DataStructs
+@@ -60,3 +63,55 @@ def mol2sascore(mols: list[RDMol], default=10):
+ 
+ def mol2qed(mols: list[RDMol], default=0):
+     return torch.tensor([safe(QED.qed, mol, default) for mol in mols])
++
++
++from rdkit.Chem import MACCSkeys
++from rdkit.Chem import rdMolDescriptors
++
++
++def mol_to_maccs(mol):
++    return [int(bit) for bit in MACCSkeys.GenMACCSKeys(mol).ToBitString()][:167]
++
++
++def mols_to_maccs(mols):
++    fps = [mol_to_maccs(mol) for mol in mols]
++    fps_array = np.array(fps, dtype=np.int32)
++    return fps_array
++
++
++def irritation(mols: list[RDMol], default=0):
++    path = "./irritation_rxnflow.pkl"
++    with open(path, 'rb') as f:
++        model = pickle.load(f)
++    fps = mols_to_maccs(mols)
++    irr = model.predict_proba(fps)
++    irr = irr[:, 1]
++    irr = 1 - torch.tensor(irr, dtype=torch.float32)
++    return irr
++
++
++def melanin(mols: list[RDMol], default=0):
++    path = "./melanin_rxnflow.pkl"
++    model = joblib.load(path)
++    fps = mols_to_maccs(mols)
++    mel = model.predict_proba(fps)
++    mel = mel[:, 1]
++    mel = torch.tensor(mel, dtype=torch.float32)
++    return mel
++
++
++def mol_to_descriptor(mol):
++    descriptor_names = list(rdMolDescriptors.Properties.GetAvailableProperties())
++    get_descriptors = rdMolDescriptors.Properties(descriptor_names)
++    descriptors = np.array(get_descriptors.ComputeProperties(mol))
++    return descriptors
++
++
++def corneal(mols: list[RDMol], default=0):
++    path = "./corneal_tacogfn.pkl"
++    model = joblib.load(path)
++    fps = np.array([mol_to_descriptor(mol) for mol in mols])
++    cor = model.predict_proba(fps)
++    cor = cor[:, 1]
++    cor = torch.tensor(cor, dtype=torch.float32)
++    return cor

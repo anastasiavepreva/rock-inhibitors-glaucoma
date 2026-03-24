@@ -1,0 +1,38 @@
+# Cloned upstream repos (recreated by setup.sh)
+methods/rxnflow/
+methods/tacogfn/
+methods/freedpp/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Large files (track with git-lfs if needed)
+*.pdbqt
+*.xtc
+*.trr
+
+# Experiment outputs
+results/runs/
+*:Zone.Identifier
