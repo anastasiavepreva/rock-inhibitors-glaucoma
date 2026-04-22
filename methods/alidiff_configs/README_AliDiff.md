@@ -27,6 +27,12 @@ git clone https://github.com/MinkaiXu/AliDiff.git
 
 ## Training (Optional)
 
+## Pretrained checkpoint
+
+```bash
+wget -P pretrained_models/ "https://zenodo.org/records/19701362/files/38300.pt?download=1"
+```
+
 ### Data Generation
 
 #### SFT Data
