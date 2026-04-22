@@ -38,7 +38,7 @@ cd "${REPO_ROOT}"
 
 # ── DrugFlow ─────────────────────────────────────────────────────────────────
 DRUGFLOW_REPO="https://github.com/LPDI-EPFL/DrugFlow.git"
-DRUGFLOW_COMMIT="TODO_PIN_COMMIT_HASH"
+DRUGFLOW_COMMIT="971aa55c913cccc04c7e9975b9dc2e69fda90288"
 
 echo "==> Cloning DrugFlow..."
 git clone "${DRUGFLOW_REPO}" "${METHODS_DIR}/drugflow"
