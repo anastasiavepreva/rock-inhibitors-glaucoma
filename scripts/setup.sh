@@ -24,7 +24,7 @@ cd "${REPO_ROOT}"
 
 # ── TacoGFN ──────────────────────────────────────────────────────────────────
 TACOGFN_REPO="https://github.com/tsa87/tacogfn.git"
-TACOGFN_COMMIT="TODO_PIN_COMMIT_HASH"
+TACOGFN_COMMIT="fd50d992fbea63860eee2f48baa816b6e38c8586"
 
 echo "==> Cloning TacoGFN..."
 git clone "${TACOGFN_REPO}" "${METHODS_DIR}/tacogfn"
