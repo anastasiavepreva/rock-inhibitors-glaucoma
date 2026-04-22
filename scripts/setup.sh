@@ -12,7 +12,7 @@ mkdir -p "${METHODS_DIR}"
 
 # ── RxnFlow ──────────────────────────────────────────────────────────────────
 RXNFLOW_REPO="https://github.com/SeonghwanSeo/RxnFlow.git"
-RXNFLOW_COMMIT="23017e3"
+RXNFLOW_COMMIT="23017e364017138cf56e11ebe5a171cfdc58aeef"
 
 echo "==> Cloning RxnFlow..."
 git clone "${RXNFLOW_REPO}" "${METHODS_DIR}/rxnflow"
@@ -54,7 +54,7 @@ echo "==> EvoSBDD: custom implementation, no upstream clone needed."
 
 # ── FREED++ ──────────────────────────────────────────────────────────────────
 FREEDPP_REPO="https://github.com/AIRI-Institute/FFREED.git"
-FREEDPP_COMMIT="TODO_PIN_COMMIT_HASH"
+FREEDPP_COMMIT="a73f22a53ea505f35b52bcd387c274391fe0fcda"
 
 echo "==> Cloning FREED++..."
 git clone "${FREEDPP_REPO}" "${METHODS_DIR}/freedpp"
@@ -62,7 +62,7 @@ cd "${METHODS_DIR}/freedpp"
 git checkout "${FREEDPP_COMMIT}"
 if [ -f "${PATCHES_DIR}/freedpp.patch" ]; then
     echo "==> Applying FREED++ patch..."
-    git apply "${PATCHES_DIR}/freedpp.patch"
+    git apply --whitespace=nowarn "${PATCHES_DIR}/freedpp.patch"
 fi
 cd "${REPO_ROOT}"
 
