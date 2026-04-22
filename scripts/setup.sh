@@ -88,7 +88,7 @@ git clone "${BADGER_REPO}" "${METHODS_DIR}/badger"
 cd "${METHODS_DIR}/badger"
 git checkout "${BADGER_COMMIT}"
 echo "==> Copying BADGER configs and scripts..."
-cp -r "${REPO_ROOT}/methods/badger_configs/"* .
+cp "${REPO_ROOT}/methods/targetdiff_configs/"* .
 echo "==> Downloading BADGER checkpoints..."
 mkdir -p checkpoints/pretrained_models
 mkdir -p checkpoints/load_ckpt/targetdiff_single_constraint_egnn
