@@ -69,9 +69,13 @@ This config keeps the same context and clip but disables guidance with `s = 0`.
 python scripts/sample_one_protein.py   --config configs/sampling_unguided.yml   --pdb pockets/6ed6_clean_pocket_15.pdb   --center 16.309 37.516 18.544   --outfile results/ligands/targetdiff_unguided_6ed6_samples.pt   --device cuda:0
 ```
 
-## Required Checkpoints Only
+## Downloading Checkpoints
 
-Only the two checkpoints required by `scripts/sample_one_protein.py` are included:
+Checkpoints are hosted on Zenodo. They will be downloaded automatically by `setup.sh`, or manually:
 
-- diffusion model: `checkpoints/pretrained_models/pretrained_diffusion.pt`
-- classifier: `checkpoints/load_ckpt/targetdiff_single_constraint_egnn/ckpt.pt`
+```bash
+mkdir -p checkpoints/pretrained_models
+mkdir -p checkpoints/load_ckpt/targetdiff_single_constraint_egnn
+wget -O checkpoints/pretrained_models/pretrained_diffusion.pt "https://zenodo.org/records/19701457/files/pretrained_diffusion.pt?download=1"
+wget -O checkpoints/load_ckpt/targetdiff_single_constraint_egnn/ckpt.pt "https://zenodo.org/records/19701457/files/ckpt.pt?download=1"
+```
