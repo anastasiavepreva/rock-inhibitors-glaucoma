@@ -12,7 +12,7 @@ mkdir -p "${METHODS_DIR}"
 
 # ── RxnFlow ──────────────────────────────────────────────────────────────────
 RXNFLOW_REPO="https://github.com/SeonghwanSeo/RxnFlow.git"
-RXNFLOW_COMMIT="TODO_PIN_COMMIT_HASH"
+RXNFLOW_COMMIT="23017e3"
 
 echo "==> Cloning RxnFlow..."
 git clone "${RXNFLOW_REPO}" "${METHODS_DIR}/rxnflow"
