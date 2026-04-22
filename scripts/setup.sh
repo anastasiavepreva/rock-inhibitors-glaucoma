@@ -80,7 +80,7 @@ mkdir -p pretrained_models
 wget -P pretrained_models/ "https://zenodo.org/records/19701362/files/38300.pt?download=1"
 cd "${REPO_ROOT}"
 
-# ── BADGER (TargetDiff) ───────────────────────────────────────────────────────
+# ── TargetDiff ───────────────────────────────────────────────────────
 BADGER_REPO="https://github.com/ASK-Berkeley/BADGER-SBDD.git"
 BADGER_COMMIT="d8c5d050b4e72676c239d97a12ca185af902a773"
 echo "==> Cloning BADGER..."
@@ -94,6 +94,22 @@ mkdir -p checkpoints/pretrained_models
 mkdir -p checkpoints/load_ckpt/targetdiff_single_constraint_egnn
 wget -O checkpoints/pretrained_models/pretrained_diffusion.pt "https://zenodo.org/records/19701457/files/pretrained_diffusion.pt?download=1"
 wget -O checkpoints/load_ckpt/targetdiff_single_constraint_egnn/ckpt.pt "https://zenodo.org/records/19701457/files/ckpt.pt?download=1"
+cd "${REPO_ROOT}"
+
+# ── DecompDiff ───────────────────────────────────────────────────────────────
+DECOMPDIFF_REPO="https://github.com/ASK-Berkeley/BADGER-SBDD.git"
+DECOMPDIFF_COMMIT="93bc35df0aad94362ff42cb1681c15472b8bc3fe"
+echo "==> Cloning DecompDiff..."
+git clone --branch decompdiff "${DECOMPDIFF_REPO}" "${METHODS_DIR}/decompdiff"
+cd "${METHODS_DIR}/decompdiff"
+git checkout "${DECOMPDIFF_COMMIT}"
+echo "==> Copying DecompDiff configs and scripts..."
+cp -r "${REPO_ROOT}/methods/decompdiff_configs/"* .
+echo "==> Downloading DecompDiff checkpoints..."
+mkdir -p checkpoints/pretrained_models
+mkdir -p checkpoints/load_ckpt/decompdiff_single_constraints
+wget -O checkpoints/pretrained_models/uni_o2_bond.pt "https://zenodo.org/records/19701524/files/uni_o2_bond.pt?download=1"
+wget -O checkpoints/load_ckpt/decompdiff_single_constraints/ckpt.pt "https://zenodo.org/records/19701524/files/ckpt.pt?download=1"
 cd "${REPO_ROOT}"
 
 # ── Symlink shared assets ────────────────────────────────────────────────────
