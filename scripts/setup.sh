@@ -80,6 +80,22 @@ mkdir -p pretrained_models
 wget -P pretrained_models/ "https://zenodo.org/records/19701362/files/38300.pt?download=1"
 cd "${REPO_ROOT}"
 
+# ── BADGER (TargetDiff) ───────────────────────────────────────────────────────
+BADGER_REPO="https://github.com/ASK-Berkeley/BADGER-SBDD.git"
+BADGER_COMMIT="d8c5d050b4e72676c239d97a12ca185af902a773"
+echo "==> Cloning BADGER..."
+git clone "${BADGER_REPO}" "${METHODS_DIR}/badger"
+cd "${METHODS_DIR}/badger"
+git checkout "${BADGER_COMMIT}"
+echo "==> Copying BADGER configs and scripts..."
+cp -r "${REPO_ROOT}/methods/badger_configs/"* .
+echo "==> Downloading BADGER checkpoints..."
+mkdir -p checkpoints/pretrained_models
+mkdir -p checkpoints/load_ckpt/targetdiff_single_constraint_egnn
+wget -O checkpoints/pretrained_models/pretrained_diffusion.pt "https://zenodo.org/records/19701457/files/pretrained_diffusion.pt?download=1"
+wget -O checkpoints/load_ckpt/targetdiff_single_constraint_egnn/ckpt.pt "https://zenodo.org/records/19701457/files/ckpt.pt?download=1"
+cd "${REPO_ROOT}"
+
 # ── Symlink shared assets ────────────────────────────────────────────────────
 echo "==> Linking ocular property models into method directories..."
 for method_dir in "${METHODS_DIR}"/*/; do
