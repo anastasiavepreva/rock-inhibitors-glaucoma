@@ -71,9 +71,13 @@ python scripts/sample_one_protein.py configs/sampling_drift_unguided.yml   --pdb
 
 This config is identical except `scale_factor = 0`.
 
-## Required Checkpoints Only
+## Downloading Checkpoints
 
-Only the two checkpoints required by `scripts/sample_one_protein.py` are included:
+Checkpoints are hosted on Zenodo. They will be downloaded automatically by `setup.sh`, or manually:
 
-- diffusion model: `checkpoints/pretrained_models/uni_o2_bond.pt`
-- classifier: `checkpoints/load_ckpt/decompdiff_single_constraints/ckpt.pt`
+```bash
+mkdir -p checkpoints/pretrained_models
+mkdir -p checkpoints/load_ckpt/decompdiff_single_constraints
+wget -O checkpoints/pretrained_models/uni_o2_bond.pt "https://zenodo.org/records/19701524/files/uni_o2_bond.pt?download=1"
+wget -O checkpoints/load_ckpt/decompdiff_single_constraints/ckpt.pt "https://zenodo.org/records/19701524/files/ckpt.pt?download=1"
+```
