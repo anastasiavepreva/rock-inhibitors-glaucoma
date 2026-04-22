@@ -1,13 +1,24 @@
-# EvoSBDD -- custom implementation
+# Custom impelementaion of EvoSBDD framework.
 
-Since EvoSBDD does not have an official public repository, the full implementation is provided here.
+Dependencies:
+- joblib
+- rdkit
+- numpy
+- torch
+- cma
+- unidock
+- unidock_tools
+- mflow
 
-Place the EvoSBDD source code in this directory.
-
-See Appendix C of the paper for implementation details:
-- Encoder/Decoder: MoFlow (open-source alternative to MolMIM)
-- Noising sigma: 1.0
-- Initial step size sigma_0: 0.25
-- Population size: 64
-- Maximum iterations: 10
-- Number of rounds: 100
+Run:
+```
+python main.py \
+    --center_x 26.909 \
+    --center_y 47.024 \
+    --center_z 52.508 \
+    --receptor "./6ed6_rec.pdbqt" \
+    --corneal_model "./corneal.pkl" \
+    --melanin_model "./melanin.pkl" \
+    --irritation_model "./irritation.pkl" \
+    --moflow_model "./moflow/results/zinc250k_512t2cnn_256gnn_512-64lin_10flow_19fold_convlu2_38af-1-1mask"
+```
