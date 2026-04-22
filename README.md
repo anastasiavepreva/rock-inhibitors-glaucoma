@@ -251,7 +251,6 @@ Generated candidates were scored using a multi-fidelity pipeline:
 
 ## Citation
 
-TODO
 
 ## License
 
