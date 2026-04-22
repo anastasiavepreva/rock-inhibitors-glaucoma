@@ -73,8 +73,11 @@ echo "==> Cloning AliDiff..."
 git clone "${ALIDIFF_REPO}" "${METHODS_DIR}/alidiff"
 cd "${METHODS_DIR}/alidiff"
 git checkout "${ALIDIFF_COMMIT}"
-mkdir -p "${METHODS_DIR}/alidiff/pretrained_models"
-wget -P "${METHODS_DIR}/alidiff/pretrained_models/" "https://zenodo.org/records/19701362/files/38300.pt?download=1"
+echo "==> Copying AliDiff configs..."
+cp "${REPO_ROOT}/methods/alidiff_configs/"* .
+echo "==> Downloading AliDiff checkpoint..."
+mkdir -p pretrained_models
+wget -P pretrained_models/ "https://zenodo.org/records/19701362/files/38300.pt?download=1"
 cd "${REPO_ROOT}"
 
 # ── Symlink shared assets ────────────────────────────────────────────────────
