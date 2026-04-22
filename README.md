@@ -4,32 +4,31 @@ Code and data accompanying the paper:
 
 > **Generative AI for Discovery of ROCK Inhibitors for Treatment of Glaucoma**
 
-
 ## Repository structure
 
 ```
-rock-inhibitors/
-├── patches/                # Minimal diffs to upstream generative model repos
+rock-inhibitors-glaucoma/
+├── patches/                        # Minimal diffs to upstream generative model repos
 │   ├── rxnflow.patch
 │   ├── tacogfn.patch
-│   ├── evosbdd.patch
 │   └── freedpp.patch
-│   (DrugFlow requires no patch, only upstream repo + config)
-├── models/                 # Trained ocular property classifiers (.pkl)
+├── models/                         # Trained ocular property classifiers (.pkl)
 │   ├── corneal.pkl
 │   ├── melanin.pkl
 │   └── irritation.pkl
 ├── data/
-│   ├── ocular/             # Training data for ocular property models
-│   ├── receptor/           # ROCK-2 structure (PDB ID: 6ED6)
+│   ├── ocular/                     # Training data for ocular property models
+│   ├── receptor/                   # ROCK-2 structure and pocket files (PDB ID: 6ED6)
 │   └── alert_collections.csv
-├── configs/                # Run configurations for each method
+├── methods/
+│   ├── evosbdd/                    # Custom EvoSBDD implementation
+│   ├── alidiff_configs/            # AliDiff configs and instructions
+│   ├── targetdiff_configs/         # BADGER TargetDiff configs and instructions
+│   └── decompdiff_configs/         # BADGER DecompDiff configs and instructions
 ├── scripts/
-│   ├── setup.sh            # Clone upstream repos + apply patches
-│   ├── train_ocular_models.py
+│   ├── setup.sh                    # Clone upstream repos + apply patches
 │   └── run_generation.sh
-├── notebooks/              # Analysis and figure reproduction
-└── results/                # Generated molecules and evaluation outputs
+
 ```
 
 ## Quick start
@@ -37,12 +36,12 @@ rock-inhibitors/
 ### 1. Clone and set up
 
 ```bash
-git clone https://github.com/<your-org>/rock-inhibitors.git
-cd rock-inhibitors
+git clone https://github.com/anastasiavepreva/rock-inhibitors-glaucoma.git
+cd rock-inhibitors-glaucoma
 bash scripts/setup.sh
 ```
 
-`setup.sh` will clone each upstream repository at the pinned commit and apply the corresponding patch.
+`setup.sh` will clone each upstream repository at the pinned commit, apply the corresponding patch, and download pretrained checkpoints.
 
 ### 2. Install dependencies
 
@@ -50,11 +49,14 @@ Each generative method has its own environment. See the upstream READMEs linked 
 
 | Method | Upstream repository | Pinned commit |
 |--------|-------------------|---------------|
-| RxnFlow | [SeonghwanSeo/RxnFlow](https://github.com/SeonghwanSeo/RxnFlow) | `TODO` |
-| TacoGFN | [tsa87/tacogfn](https://github.com/tsa87/tacogfn) | `TODO` |
-| DrugFlow | [LPDI-EPFL/DrugFlow](https://github.com/LPDI-EPFL/DrugFlow) | `TODO` |
+| RxnFlow | [SeonghwanSeo/RxnFlow](https://github.com/SeonghwanSeo/RxnFlow) | `23017e364017138cf56e11ebe5a171cfdc58aeef` |
+| TacoGFN | [tsa87/tacogfn](https://github.com/tsa87/tacogfn) | `fd50d992fbea63860eee2f48baa816b6e38c8586` |
+| DrugFlow | [LPDI-EPFL/DrugFlow](https://github.com/LPDI-EPFL/DrugFlow) | `971aa55c913cccc04c7e9975b9dc2e69fda90288` |
 | EvoSBDD | (custom implementation) | -- |
-| FREED++ | [AIRI-Institute/FFREED](https://github.com/AIRI-Institute/FFREED) | `TODO` |
+| FREED++ | [AIRI-Institute/FFREED](https://github.com/AIRI-Institute/FFREED) | `a73f22a53ea505f35b52bcd387c274391fe0fcda` |
+| AliDiff | [MinkaiXu/AliDiff](https://github.com/MinkaiXu/AliDiff) | `4033ba21070c0df7445881401460bd1c7ec2fc28` |
+| TargetDiff (BADGER) | [ASK-Berkeley/BADGER-SBDD](https://github.com/ASK-Berkeley/BADGER-SBDD) | `d8c5d050b4e72676c239d97a12ca185af902a773` |
+| DecompDiff (BADGER) | [ASK-Berkeley/BADGER-SBDD](https://github.com/ASK-Berkeley/BADGER-SBDD) branch `decompdiff` | `93bc35df0aad94362ff42cb1681c15472b8bc3fe` |
 
 ### 3. Download pretrained models / data
 
@@ -63,6 +65,8 @@ Each generative method has its own environment. See the upstream READMEs linked 
 # ROCK-2 receptor structure
 wget -P data/receptor/ https://files.rcsb.org/download/6ED6.pdb
 ```
+
+Checkpoints for AliDiff, TargetDiff, and DecompDiff are downloaded automatically by `setup.sh` from Zenodo.
 
 ### 4. Run generation
 
@@ -75,8 +79,9 @@ See method-specific instructions in each section below.
 Modifications: added three ocular objectives (corneal permeability, melanin binding, irritation) to the multi-objective reward.
 
 ```bash
-# Zero-shot generation
 cd methods/rxnflow
+
+# Zero-shot generation
 python scripts/sampling_zeroshot.py \
   --model_path ./weights/qvina-unif-0-64_20250512.pt \
   --env_dir ./data/envs/zincfrag \
@@ -120,7 +125,7 @@ python3 src/tasks/generate_molecules.py \
 
 ### DrugFlow
 
-DrugFlow is used without modification from the upstream repository. No patch is needed.
+DrugFlow is used without modification from the upstream repository. No patch is needed. See `methods/README_DrugFlow.md` for detailed instructions.
 
 ```bash
 cd methods/drugflow
@@ -143,7 +148,7 @@ python src/generate.py \
 
 ### EvoSBDD
 
-*Instructions will be added when code is provided.*
+Custom implementation, no upstream repository. Code is provided in `methods/evosbdd/`.
 
 ### FREED++
 
@@ -172,6 +177,70 @@ python main.py \
   --weights "1.0,1.0,1.0,1.0"
 ```
 
+### AliDiff
+
+AliDiff is used without modification. See `methods/alidiff_configs/README_AliDiff.md` for detailed instructions.
+
+```bash
+cd methods/alidiff
+
+python sample_one_protein.py configs/sampling.yml \
+  --pdb ../../data/receptor/6ed6_clean_pocket_12.pdb \
+  --center 26.9098 47.024 52.50861
+```
+
+### TargetDiff (BADGER)
+
+TargetDiff is used without modification via the BADGER framework. See `methods/targetdiff_configs/README.md` for detailed instructions.
+
+```bash
+cd methods/targetdiff
+
+# Guided generation
+python scripts/sample_one_protein.py \
+  --config configs/sampling_guided.yml \
+  --pdb ../../data/receptor/6ed6_clean_pocket_15.pdb \
+  --center 16.309 37.516 18.544 \
+  --outfile results/ligands/targetdiff_guided_6ed6_samples.pt \
+  --device cuda:0
+
+# Unguided generation
+python scripts/sample_one_protein.py \
+  --config configs/sampling_unguided.yml \
+  --pdb ../../data/receptor/6ed6_clean_pocket_15.pdb \
+  --center 16.309 37.516 18.544 \
+  --outfile results/ligands/targetdiff_unguided_6ed6_samples.pt \
+  --device cuda:0
+```
+
+### DecompDiff (BADGER)
+
+DecompDiff is used without modification via the BADGER framework. See `methods/decompdiff_configs/README.md` for detailed instructions.
+
+```bash
+cd methods/decompdiff
+
+# Guided generation
+python scripts/sample_one_protein.py configs/sampling_drift_guided.yml \
+  --pdb ../../data/receptor/6ed6_clean_pocket_15.pdb \
+  --center 16.309 37.516 18.544 \
+  --prior_mode subpocket \
+  --outdir results/ligands \
+  --outfile decompdiff_guided_6ed6_samples.pt \
+  --num 256 \
+  --device cuda:0
+
+# Unguided generation
+python scripts/sample_one_protein.py configs/sampling_drift_unguided.yml \
+  --pdb ../../data/receptor/6ed6_clean_pocket_15.pdb \
+  --center 16.309 37.516 18.544 \
+  --prior_mode subpocket \
+  --outdir results/ligands \
+  --outfile decompdiff_unguided_6ed6_samples.pt \
+  --num 256 \
+  --device cuda:0
+```
+
 ## Scoring and re-ranking
 
 Generated candidates were scored using a multi-fidelity pipeline:
@@ -182,7 +251,7 @@ Generated candidates were scored using a multi-fidelity pipeline:
 
 ## Citation
 
-
+TODO
 
 ## License
 
