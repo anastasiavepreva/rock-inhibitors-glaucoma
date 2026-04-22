@@ -66,6 +66,15 @@ if [ -f "${PATCHES_DIR}/freedpp.patch" ]; then
 fi
 cd "${REPO_ROOT}"
 
+# ── AliDiff ──────────────────────────────────────────────────────────────────
+ALIDIFF_REPO="https://github.com/MinkaiXu/AliDiff.git"
+ALIDIFF_COMMIT="4033ba21070c0df7445881401460bd1c7ec2fc28"
+echo "==> Cloning AliDiff..."
+git clone "${ALIDIFF_REPO}" "${METHODS_DIR}/alidiff"
+cd "${METHODS_DIR}/alidiff"
+git checkout "${ALIDIFF_COMMIT}"
+cd "${REPO_ROOT}"
+
 # ── Symlink shared assets ────────────────────────────────────────────────────
 echo "==> Linking ocular property models into method directories..."
 for method_dir in "${METHODS_DIR}"/*/; do
