@@ -251,16 +251,6 @@ Generated candidates were scored using a multi-fidelity pipeline:
 
 ## Citation
 
-If you use this code in your research, please cite:
-
-```bibtex
-@article{vepreva2026rock,
-  title={Generative AI for Discovery of ROCK Inhibitors for Treatment of Glaucoma},
-  author={Vepreva, Anastasia and Tsypin, Artem and Khrabrov, Kuzma and Ber, Anton and Telepov, Alexander and Gubina, Nina and Chernov, Daniil and Shkil, Dmitry and Vinogradov, Vladimir and Kadurin, Artur and Dmitrenko, Andrei},
-  year={2026}
-}
-```
-
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
